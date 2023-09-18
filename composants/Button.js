@@ -1,8 +1,26 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { useCallback } from 'react';
+
 
 export default function Button({ label, theme, onPress }) {
-    if (theme === "primary") {
+  const [fontsLoaded] = useFonts({
+    'Exo2-Italic': require('../assets/fonts/Exo_2/Exo2-Italic.ttf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  if (theme === "primary") {
       return (
         <View
         style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}
@@ -24,13 +42,13 @@ export default function Button({ label, theme, onPress }) {
     }
   
     return (
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonContainer} onLayout={onLayoutRootView}>
           <Pressable style={styles.button} onPress={onPress}>
             <Text style={styles.buttonLabel}>{label}</Text>
           </Pressable>
         </View>
-    );
-  }
+  );
+}
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -55,5 +73,6 @@ const styles = StyleSheet.create({
   buttonLabel: {
     color: '#fff',
     fontSize: 16,
+    fontFamily:'Exo2-Italic'
   },
 });
